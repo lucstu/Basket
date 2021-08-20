@@ -1,6 +1,6 @@
 # Basket
 
-This proof of concept project represents a low less betting implementation of a smart contract using PoolTogether's Prize Pools.
+This proof of concept project represents a low loss betting implementation of a smart contract using PoolTogether's Prize Pools.
 
 ## Testing
 

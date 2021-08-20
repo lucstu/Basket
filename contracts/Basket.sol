@@ -14,7 +14,8 @@ contract Basket {
         uint[] matches;
     }
 
-    // Store data with given ID on frontend side.
+    // Render data with given ID on frontend side (teams, logos, etc).
+    // Team 1 is home, draw is draw, Team 2 is away
     struct Match {
         uint id;
         uint odds1; // Need to convert decimal to fixed point
@@ -33,8 +34,12 @@ contract Basket {
 
     address admin;
 
-    constructor() public {
+    uint num_bets;
+
+    constructor(uint _num_bets) {
         admin = msg.sender;
+
+        num_bets = _num_bets;
     }
 
     // Integrate with a pooltogether pool later.
@@ -43,7 +48,7 @@ contract Basket {
 
         uint[] memory matches;
 
-        Player memory newPlayer = Player({addr:msg.sender, score:0, bets_remaining:5, wins:0, losses:0, exists:true, matches:matches});
+        Player memory newPlayer = Player({addr:msg.sender, score:0, bets_remaining:num_bets, wins:0, losses:0, exists:true, matches:matches});
 
         players[msg.sender] = newPlayer;
     }
@@ -58,20 +63,24 @@ contract Basket {
 
         Match memory newMatch = Match({id:id, odds1: odds1, oddsDraw:oddsDraw, odds2:odds2, team1:addr1, draw:draw, team2:addr2, exists:true});
 
+        matchIds.push(id);
         active_matches[id] = newMatch;
     }
 
     // 0: team1, 1: draw, 2: team2
+    // User places a bet.
     function placeBet(uint id, uint pick) public {
-        require(players[msg.sender].exists, "Player does not exist.");
-        require(players[msg.sender].bets_remaining > 0, "You have no bets remaining");
+        require(players[msg.sender].exists, "Player does not exist."); // Checks that they exist in the Basket
+        require(players[msg.sender].bets_remaining > 0, "You have no bets remaining"); // Checks that they aren't out of bets.
 
+        // Looks to see if player has already placed a bet on this match.
         for (uint i=0; i < players[msg.sender].matches.length; i++) {
             if (players[msg.sender].matches[i] == id) {
                 revert("Player has already bet on this match!");
             }
         }
 
+        // Places a bet for the appropriate team.
         if (pick == 0) {
             active_matches[id].team1.push(msg.sender);
             players[msg.sender].bets_remaining -= 1;
@@ -89,6 +98,7 @@ contract Basket {
         }
     }
 
+    // Going to change this function way too much for just checking that a player bet. Just works for testing for now.
     function getBet(uint id, uint pick) public view returns (bool) {
         require (players[msg.sender].exists, "Player does not exist.");
 
@@ -126,9 +136,11 @@ contract Basket {
         return (betOnMatch && betOnPick);
     }
 
+    // Admin function to decide the result of a match.
     function decideMatch(uint id, uint winner) public {
-        require(msg.sender == admin, "Only admin can decide matches");
+        require(msg.sender == admin, "Only admin can decide matches"); // Requires admin privileges.
 
+        // Awards wins/losses + score appropriately.
         if (winner == 0) {
             for (uint i=0; i < active_matches[id].team1.length; i++) {
                 players[active_matches[id].team1[i]].wins += 1;
@@ -178,8 +190,6 @@ contract Basket {
         } else {
             revert("Invalid id provided");
         }
-
-        // remove match from array
     }
 
     function getPlayer() public view returns (bool) {
@@ -201,5 +211,9 @@ contract Basket {
         require(players[msg.sender].exists, "Player does not exist.");
 
         return players[msg.sender].wins;
+    }
+
+    function getMatchLength() public view returns (uint) {
+        return matchIds.length;
     }
 }

@@ -30,7 +30,10 @@ contract Basket {
     uint[] matchIds;
     mapping (uint => Match) active_matches;
 
+    address[] playerAddresses;
     mapping (address => Player) players;
+
+    mapping (uint => uint) helper;
 
     address admin;
 
@@ -49,6 +52,7 @@ contract Basket {
         uint[] memory matches;
 
         Player memory newPlayer = Player({addr:msg.sender, score:0, bets_remaining:num_bets, wins:0, losses:0, exists:true, matches:matches});
+        playerAddresses.push(msg.sender);
 
         players[msg.sender] = newPlayer;
     }
@@ -144,52 +148,64 @@ contract Basket {
         if (winner == 0) {
             for (uint i=0; i < active_matches[id].team1.length; i++) {
                 players[active_matches[id].team1[i]].wins += 1;
-                players[active_matches[id].team1[i]].score += 1;
+                //players[active_matches[id].team1[i]].score += 1;
             }
 
             for (uint i=0; i < active_matches[id].draw.length; i++) {
                 players[active_matches[id].draw[i]].losses += 1;
-                players[active_matches[id].draw[i]].score -= 1;
+                //players[active_matches[id].draw[i]].score -= 1;
             }
 
             for (uint i=0; i < active_matches[id].team2.length; i++) {
                 players[active_matches[id].team2[i]].losses += 1;
-                players[active_matches[id].team2[i]].score -= 1;
+                //players[active_matches[id].team2[i]].score -= 1;
             }
 
         } else if (winner == 1) {
             for (uint i=0; i < active_matches[id].team1.length; i++) {
                 players[active_matches[id].team1[i]].losses += 1;
-                players[active_matches[id].team1[i]].score -= 1;
+                //players[active_matches[id].team1[i]].score -= 1;
             }
 
             for (uint i=0; i < active_matches[id].draw.length; i++) {
                 players[active_matches[id].draw[i]].wins += 1;
-                players[active_matches[id].draw[i]].score += 1;
+                //players[active_matches[id].draw[i]].score += 1;
             }
 
             for (uint i=0; i < active_matches[id].team2.length; i++) {
                 players[active_matches[id].team2[i]].losses += 1;
-                players[active_matches[id].team2[i]].score -= 1;
+                //players[active_matches[id].team2[i]].score -= 1;
             }
         } else if (winner == 2) {
             for (uint i=0; i < active_matches[id].team1.length; i++) {
                 players[active_matches[id].team1[i]].losses += 1;
-                players[active_matches[id].team1[i]].score -= 1;
+                //players[active_matches[id].team1[i]].score -= 1;
             }
 
             for (uint i=0; i < active_matches[id].draw.length; i++) {
                 players[active_matches[id].draw[i]].losses += 1;
-                players[active_matches[id].draw[i]].score -= 1;
+                //players[active_matches[id].draw[i]].score -= 1;
             }
 
             for (uint i=0; i < active_matches[id].team2.length; i++) {
                 players[active_matches[id].team2[i]].wins += 1;
-                players[active_matches[id].team2[i]].score += 1;
+                //players[active_matches[id].team2[i]].score += 1;
             }
         } else {
             revert("Invalid id provided");
         }
+    }
+
+    function getWinner() public view returns (uint) {
+        uint max = 0;
+
+        for (uint i=0; i < playerAddresses.length; i++) {
+            if (players[playerAddresses[i]].wins > max) {
+                max = players[playerAddresses[i]].wins;
+            }
+        }
+
+        return max;
     }
 
     function getPlayer() public view returns (bool) {

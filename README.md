@@ -2,7 +2,9 @@
 
 This proof of concept protocol represents a no-loss betting implementation of a smart contract using PoolTogether's Prize Pools.
 
-Players compete in gameweeks and are ranked by their betting record. Winners earn the interest gained on their funds, and the losers get their deposit back in the gameweek.
+Players compete in gameweeks and are ranked by their betting record. Winners split the interest gained on their funds, and the losers get their deposit back.
+
+Defining winners and losers can be very aggressive or generous depending on the prize strategy for each gameweek.
 
 ## Testing
 

@@ -6,14 +6,8 @@ This proof of concept project represents a low less betting implementation of a 
 
 This project was developed using Hardhat.
 
-Try running some of the following tasks to get started:
+To run tests, place your test files in the test directory and run the following.
 
 ```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
 npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
 ```

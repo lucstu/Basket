@@ -1,8 +1,12 @@
-# Basic Sample Hardhat Project
+# Basket
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+This proof of concept project represents a low less betting implementation of a smart contract using PoolTogether's Prize Pools.
 
-Try running some of the following tasks:
+## Testing
+
+This project was developed using Hardhat.
+
+Try running some of the following tasks to get started:
 
 ```shell
 npx hardhat accounts

@@ -16,6 +16,8 @@ To run tests, place your test files in the test directory and run the following.
 npx hardhat test
 ```
 
+For the frontend, navigate to the frontend directory, run npm install, then npm start.
+
 ## Warning
 
 This project was done as a hackathon project. It is not audited and NOT intended or ready for use in a production environment.

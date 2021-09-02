@@ -31,6 +31,7 @@ contract Basket {
     mapping (uint => Match) active_matches;
 
     address[] playerAddresses;
+    address[] winners;
     mapping (address => Player) players;
 
     mapping (uint => uint) helper;
@@ -43,6 +44,10 @@ contract Basket {
         admin = msg.sender;
 
         num_bets = _num_bets;
+    }
+
+    function getAdmin() public view returns (address) {
+        return admin;
     }
 
     // Integrate with a pooltogether pool later.
@@ -194,6 +199,22 @@ contract Basket {
         } else {
             revert("Invalid id provided");
         }
+    }
+
+    function decideWinners() public {
+        require(msg.sender == admin, "Only owner can get winners.");
+
+        uint max = getWinner();
+
+        for (uint i=0; i < playerAddresses.length; i++) {
+            if (players[playerAddresses[i]].wins == max) {
+                winners.push(playerAddresses[i]);
+            }
+        }
+    }
+
+    function getWinners() public view returns (address[] memory) {
+        return winners;
     }
 
     function getWinner() public view returns (uint) {

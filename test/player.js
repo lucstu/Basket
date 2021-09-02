@@ -238,3 +238,55 @@ describe("Basket", function () {
 
   });
 });
+
+describe("Basket", function () {
+  it("Checking that two players both are credited in first place..", async function () {
+    const [owner, addr1, addr2, addr3] = await ethers.getSigners();
+
+    const Basket = await ethers.getContractFactory("Basket");
+    const basket = await Basket.deploy(5);
+    await basket.deployed();
+
+    const match = await basket.addMatch(0, 2, 3, 3);
+    await match.wait();
+    const match2 = await basket.addMatch(1, 2, 3, 3);
+    await match2.wait();
+    
+    const player1 = await basket.connect(addr1).addPlayer();
+    await player1.wait();
+    const p1_bet1 = await basket.connect(addr1).placeBet(0,0);
+    await p1_bet1.wait();
+    const p1_bet2 = await basket.connect(addr1).placeBet(1,0);
+    await p1_bet2.wait();
+
+    const player2 = await basket.connect(addr2).addPlayer();
+    await player2.wait();
+    const p2_bet1 = await basket.connect(addr2).placeBet(0,0);
+    await p2_bet1.wait();
+    const p2_bet2 = await basket.connect(addr2).placeBet(1,0);
+    await p2_bet2.wait();
+
+    const player3 = await basket.connect(addr3).addPlayer();
+    await player3.wait();
+    const p3_bet1 = await basket.connect(addr3).placeBet(0,1);
+    await p3_bet1.wait();
+    const p3_bet2 = await basket.connect(addr3).placeBet(1,1);
+    await p3_bet2.wait();
+
+    await basket.connect(owner).decideMatch(0,0);
+    await basket.connect(owner).decideMatch(1,0);
+
+    expect(await basket.connect(addr1).getWins()).to.equal(2);
+
+    expect(await basket.connect(owner).getWinner()).to.equal(2);
+
+    const winner = await basket.connect(owner).decideWinners();
+    await winner.wait();
+
+    const winners = await basket.connect(owner).getWinners()
+
+    expect(winners).to.contain(addr1.address);
+    expect(winners).to.contain(addr2.address);
+
+  });
+});
